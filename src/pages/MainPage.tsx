@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 import axios from "axios";
-import sun from "../assets/images/cloudy.jpg";
+import sun from "../assets/images/sun.jpg";
 
 // 전역으로 QueryClient 객체 생성
 const queryClient = new QueryClient();
 
 const MainPage = () => {
-  const [weather, setWeather] = useState(null);
+  const [weather, setWeather] = useState<any>(null);
 
   const getCurrentLocation = () => {
     // 현재 위치 가져오기
