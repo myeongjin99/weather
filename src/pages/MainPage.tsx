@@ -1,23 +1,29 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
 import axios from "axios";
 import sun from "../assets/images/sun.jpg";
 import { IoWaterOutline } from "react-icons/io5";
+import ChatGptApi from "../components/ChatGptApi";
 
 // 전역으로 QueryClient 객체 생성
 const queryClient = new QueryClient();
 
 const MainPage = () => {
   const [weather, setWeather] = useState<any>(null);
+  const [currentTemperature, setCurrentTemperature] = useState<number | null>(
+    null
+  );
+  const [gptResMsg, setGptResMsg] = useState<string | undefined>();
 
   const getCurrentLocation = () => {
     // 현재 위치 가져오기
-    navigator.geolocation.getCurrentPosition((position) => {
+    navigator.geolocation.getCurrentPosition(async (position) => {
       let lat = position.coords.latitude;
       let lon = position.coords.longitude;
       console.log("현재 위치", lat, lon);
-      getWeather(lat, lon);
+      const weatherData = await getWeather(lat, lon);
+      setCurrentTemperature(Math.round(weatherData.main.temp - 273.15));
     });
   };
 
@@ -34,17 +40,40 @@ const MainPage = () => {
       console.log("날씨 데이터:", response.data);
       setWeather(response.data);
       return response.data;
-
-      // 날씨 아이콘을 불러오기
-      const weatherIcon = response.data.weather[0].icon;
-      const weatherIconUrl = `http://openweathermap.org/img/wn/${weatherIcon}.png`;
-      console.log("날씨 아이콘 URL:", weatherIconUrl);
-
-      // 여기서 날씨 아이콘을 사용하거나, 상태로 설정하거나, 렌더링에 적용할 수 있습니다.
-      return { weatherData: response.data, weatherIconUrl };
     } catch (error) {
       console.error("날씨 데이터를 가져오는 데 실패했습니다.", error);
-      throw error; // 에러를 호출자에게 전파할 수도 있습니다.
+      throw error;
+    }
+  };
+
+  const fetchResponse = async () => {
+    try {
+      const apiKey = process.env.REACT_APP_CHATGPT_KEY;
+
+      const res = await axios.post(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "system",
+              content: `기온이 ${currentTemperature}도인 상태에서 입고나가기 좋은 옷 종류를 모자, 상의, 하의, 신발 순으로 4개만 한국말로 배열에 담아서 보내줘.`, // Replace with your starting message
+            },
+          ],
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+        }
+      );
+
+      console.log("gpt 응답값", res.data.choices[0].message.content);
+      // setGptResMsg(gptResMsg); // gptResMsg state 설정
+      setGptResMsg(res.data.choices[0].message.content.split(","));
+    } catch (error) {
+      console.log(error, "에러");
     }
   };
 
@@ -88,8 +117,11 @@ const MainPage = () => {
               />
             </IconContainer>
           )}
-          <DayWeather> 오늘 뭐 입을까?</DayWeather>
+          <TodayClothes onClick={fetchResponse}>
+            오늘 <LargeText>뭐</LargeText> 입을까?
+          </TodayClothes>
         </DayOfWeatherContainer>
+        <ChatGptApi gptResMsg={gptResMsg} />
       </MainPageContainer>
     </QueryClientProvider>
   );
@@ -101,6 +133,8 @@ const MainPageContainer = styled.div`
   border: 1px solid black;
   margin: 0 auto;
   background-image: url(${sun});
+  background-repeat: no-repeat;
+  background-size: cover;
   opacity: 70%;
 `;
 
@@ -158,7 +192,7 @@ const DayOfWeatherContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20%;
+  flex-direction: column;
 `;
 
 const IconContainer = styled.div``;
@@ -168,7 +202,12 @@ const Icon = styled.img`
   height: 100px; /* 아이콘 크기에 따라 조절하세요 */
 `;
 
-const DayWeather = styled.div`
+const TodayClothes = styled.div`
   font-family: "GongGothicMedium";
+  font-size: 20px;
+`;
+
+const LargeText = styled.span`
+  font-size: 30px; /* 크게 조절할 폰트 사이즈 */
 `;
 export default MainPage;
