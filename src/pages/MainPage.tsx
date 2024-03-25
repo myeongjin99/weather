@@ -21,7 +21,7 @@ const MainPage = () => {
     navigator.geolocation.getCurrentPosition(async (position) => {
       let lat = position.coords.latitude;
       let lon = position.coords.longitude;
-      console.log("현재 위치", lat, lon);
+      // console.log("현재 위치", lat, lon);
       const weatherData = await getWeather(lat, lon);
       setCurrentTemperature(Math.round(weatherData.main.temp - 273.15));
     });
@@ -37,11 +37,11 @@ const MainPage = () => {
       const response = await axios.get(
         `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${weatherKey}`
       );
-      console.log("날씨 데이터:", response.data);
+      // console.log("날씨 데이터:", response.data);
       setWeather(response.data);
       return response.data;
     } catch (error) {
-      console.error("날씨 데이터를 가져오는 데 실패했습니다.", error);
+      // console.error("날씨 데이터를 가져오는 데 실패했습니다.", error);
       throw error;
     }
   };
@@ -69,73 +69,83 @@ const MainPage = () => {
         }
       );
 
-      console.log("gpt 응답값", res.data.choices[0].message.content);
-      // setGptResMsg(gptResMsg); // gptResMsg state 설정
+      // console.log("gpt 응답값", res.data.choices[0].message.content);
       setGptResMsg(res.data.choices[0].message.content.split(","));
     } catch (error) {
-      console.log(error, "에러");
+      // console.log(error, "에러");
     }
   };
 
   return (
     <QueryClientProvider client={queryClient}>
-      <MainPageContainer>
-        {weather && (
-          <>
-            <Location>{weather.name}</Location>
-            <Temperature>{Math.round(weather.main.temp - 273.15)}°</Temperature>
+      <CenteredContent>
+        <MainPageContainer>
+          {weather && (
+            <>
+              <Location>{weather.name}</Location>
+              <Temperature>
+                {Math.round(weather.main.temp - 273.15)}°
+              </Temperature>
 
-            <Wrapper>
-              <TemperatureContainer>
-                <MTemp>
-                  최고 : {Math.round(weather.main.temp_max - 273.15)}°
-                </MTemp>
-                <MTemp>
-                  최저 : {Math.round(weather.main.temp_min - 273.15)}°
-                </MTemp>
-              </TemperatureContainer>
-              <HumidityContainer>
-                <IoWaterOutline
-                  style={{
-                    color: "white",
-                    width: "20px",
-                    height: "20px",
-                    marginRight: "5px",
-                  }}
-                />
-                <Humidity>{weather.main.humidity}%</Humidity>
-              </HumidityContainer>
-            </Wrapper>
-          </>
-        )}
-        <DayOfWeatherContainer>
-          {weather?.weather && (
-            <IconContainer>
-              <Icon
-                src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}.png`}
-                alt="Weather Icon"
-              />
-            </IconContainer>
+              <Wrapper>
+                <TemperatureContainer>
+                  <MTemp>
+                    최고 : {Math.round(weather.main.temp_max - 273.15)}°
+                  </MTemp>
+                  <MTemp>
+                    최저 : {Math.round(weather.main.temp_min - 273.15)}°
+                  </MTemp>
+                </TemperatureContainer>
+                <HumidityContainer>
+                  <IoWaterOutline
+                    style={{
+                      color: "white",
+                      width: "20px",
+                      height: "20px",
+                      marginRight: "5px",
+                    }}
+                  />
+                  <Humidity>{weather.main.humidity}%</Humidity>
+                </HumidityContainer>
+              </Wrapper>
+            </>
           )}
-          <TodayClothes onClick={fetchResponse}>
-            오늘 <LargeText>뭐</LargeText> 입을까?
-          </TodayClothes>
-        </DayOfWeatherContainer>
-        <ChatGptApi gptResMsg={gptResMsg} />
-      </MainPageContainer>
+          <DayOfWeatherContainer>
+            {weather?.weather && (
+              <IconContainer>
+                <Icon
+                  src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}.png`}
+                  alt="Weather Icon"
+                />
+              </IconContainer>
+            )}
+            <TodayClothes onClick={fetchResponse}>
+              오늘 <LargeText>뭐</LargeText> 입을까?
+            </TodayClothes>
+          </DayOfWeatherContainer>
+          <ChatGptApi gptResMsg={gptResMsg} />
+        </MainPageContainer>
+      </CenteredContent>
     </QueryClientProvider>
   );
 };
 
+const CenteredContent = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+`;
+
 const MainPageContainer = styled.div`
   width: 500px;
-  height: 100vh;
   border: 1px solid black;
   margin: 0 auto;
   background-image: url(${sun});
   background-repeat: no-repeat;
   background-size: cover;
   opacity: 70%;
+  padding-bottom: 40px;
 `;
 
 const Location = styled.div`
@@ -198,16 +208,17 @@ const DayOfWeatherContainer = styled.div`
 const IconContainer = styled.div``;
 
 const Icon = styled.img`
-  width: 100px; /* 아이콘 크기에 따라 조절하세요 */
-  height: 100px; /* 아이콘 크기에 따라 조절하세요 */
+  width: 100px;
+  height: 100px;
 `;
 
 const TodayClothes = styled.div`
   font-family: "GongGothicMedium";
   font-size: 20px;
+  cursor: pointer;
 `;
 
 const LargeText = styled.span`
-  font-size: 30px; /* 크게 조절할 폰트 사이즈 */
+  font-size: 30px;
 `;
 export default MainPage;

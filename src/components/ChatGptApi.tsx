@@ -6,9 +6,21 @@ const ChatGptApi = ({ gptResMsg }: { gptResMsg: any }) => {
   const renderItems = () => {
     if (!gptResMsg || gptResMsg.length === 0) return null;
 
-    return gptResMsg.map((item: string, index: number) => (
-      <RecommendItem key={index}>{item.replace(/['\[\]]/g, "")}</RecommendItem>
-    ));
+    return gptResMsg.map((item: string, index: number) => {
+      const itemName = item.replace(/['\[\]]/g, ""); // 대괄호와 따옴표 제거
+      return (
+        <RecommendItem key={index}>
+          {index === 0
+            ? "모자"
+            : index === 1
+            ? "상의"
+            : index === 2
+            ? "하의"
+            : "신발"}
+          : {itemName}
+        </RecommendItem>
+      );
+    });
   };
 
   return (
@@ -34,13 +46,12 @@ const AiLayout = styled.article`
 `;
 
 const RecommendClothesContainer = styled.div`
-  /* border: 1px solid black; */
   width: 200px;
 `;
 
 const RecommendItem = styled.div`
   font-family: "GongGothicMedium";
   font-size: 20px;
-  margin-top: 30px;
+  padding: 20px;
 `;
 export default ChatGptApi;
