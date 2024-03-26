@@ -72,13 +72,13 @@ const CenteredContent = styled.div`
 
 const MainPageContainer = styled.div`
   width: 500px;
-  border: 1px solid black;
   margin: 0 auto;
   background-image: url(${sun});
   background-repeat: no-repeat;
   background-size: cover;
   opacity: 70%;
   padding-bottom: 40px;
+  box-shadow: 5px 5px 5px gray;
 `;
 
 export default MainPage;
