@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { QueryClient, QueryClientProvider } from "react-query";
 import axios from "axios";
 import sun from "../assets/images/sun.jpg";
-import { IoWaterOutline } from "react-icons/io5";
 import ChatGptApi from "../components/ChatGptApi";
+import CurrentTemp from "../components/CurrentTemp";
 
 // 전역으로 QueryClient 객체 생성
 const queryClient = new QueryClient();
@@ -80,36 +80,7 @@ const MainPage = () => {
     <QueryClientProvider client={queryClient}>
       <CenteredContent>
         <MainPageContainer>
-          {weather && (
-            <>
-              <Location>{weather.name}</Location>
-              <Temperature>
-                {Math.round(weather.main.temp - 273.15)}°
-              </Temperature>
-
-              <Wrapper>
-                <TemperatureContainer>
-                  <MTemp>
-                    최고 : {Math.round(weather.main.temp_max - 273.15)}°
-                  </MTemp>
-                  <MTemp>
-                    최저 : {Math.round(weather.main.temp_min - 273.15)}°
-                  </MTemp>
-                </TemperatureContainer>
-                <HumidityContainer>
-                  <IoWaterOutline
-                    style={{
-                      color: "white",
-                      width: "20px",
-                      height: "20px",
-                      marginRight: "5px",
-                    }}
-                  />
-                  <Humidity>{weather.main.humidity}%</Humidity>
-                </HumidityContainer>
-              </Wrapper>
-            </>
-          )}
+          <CurrentTemp weather={weather} />
           <DayOfWeatherContainer>
             {weather?.weather && (
               <IconContainer>
@@ -146,50 +117,6 @@ const MainPageContainer = styled.div`
   background-size: cover;
   opacity: 70%;
   padding-bottom: 40px;
-`;
-
-const Location = styled.div`
-  font-family: "GongGothicMedium";
-  font-size: 25px;
-  display: flex;
-  left: 0;
-  margin: 25px;
-  color: white;
-`;
-
-const Temperature = styled.div`
-  font-family: "GongGothicMedium";
-  font-size: 50px;
-  display: flex;
-  left: 0;
-  margin: 25px;
-  color: white;
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin: 25px;
-`;
-const TemperatureContainer = styled.div`
-  display: flex;
-  color: #e4e4e4;
-`;
-
-const MTemp = styled.div`
-  font-family: "GongGothicMedium";
-  font-size: 20px;
-`;
-
-const HumidityContainer = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const Humidity = styled.div`
-  font-family: "GongGothicMedium";
-  font-size: 20px;
-  color: #e4e4e4;
 `;
 
 const DayOfWeatherContainer = styled.div`
