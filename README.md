@@ -16,7 +16,7 @@
 <table>
   <tbody>
     <tr>
-      <td align="center"><a href="https://github.com/LOCA525"><img src="https://avatars.githubusercontent.com/u/98865366?v=4" width="50px;" alt=""/><br /><sub><b>FE 서명</b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/myeongjin99"><img src="https://avatars.githubusercontent.com/u/98865366?v=4" width="50px;" alt=""/><br /><sub><b>FE 서명</b></sub></a><br /></td>
   </tbody>
 </table>
 
